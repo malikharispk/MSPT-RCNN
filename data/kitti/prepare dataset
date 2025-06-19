@@ -1,0 +1,8 @@
+data/kitti/
+├── training/
+│   ├── calib/
+│   ├── label_2/
+│   └── velodyne/
+└── testing/
+    ├── calib/
+    └── velodyne/
