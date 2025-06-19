@@ -1,30 +1,56 @@
 import torch
-from kitti_dataset import KITTIDataset
 from torch.utils.data import DataLoader
+import yaml
+from tqdm import tqdm
+
 from models.mspt_rcnn import MSPTRCNN
-from torch.utils.tensorboard import SummaryWriter
+from data.kitti_dataset import KITTIDataset
+from utils.metrics import calculate_map
 
-# Hyperparameters
-config = {
-    'batch_size': 4
-}
+def validate_model(config_path, model_path):
+    # Load config
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    # Setup device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    # Build model
+    model = MSPTRCNN(
+        num_classes=config['model']['num_classes'],
+        num_points=config['model']['num_points'],
+        num_neighbors=config['model']['num_neighbors']
+    ).to(device)
+    
+    # Load weights
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.eval()
+    
+    # Build dataloader
+    dataset = KITTIDataset(
+        root_dir=config['data']['root_dir'],
+        split='validation',  # Assuming you have a validation split
+        num_points=config['model']['num_points']
+    )
+    
+    dataloader = DataLoader(
+        dataset,
+        batch_size=config['train']['batch_size'],
+        shuffle=False,
+        num_workers=config['data']['num_workers']
+    )
+    
+    # Loss functions
+    criterion_cls = nn.CrossEntropyLoss()
+    criterion_reg = nn.SmoothL1Loss()
+    
+    # Run validation
+    val_loss, mAP = validate(
+        model, dataloader, criterion_cls, criterion_reg, device, config
+    )
+    
+    print(f"Validation Loss: {val_loss:.4f}")
+    print(f"mAP: {mAP:.4f}")
 
-# Initialize validation dataset and dataloaders
-val_dataset = KITTIDataset(data_dir='/path/to/kitti', split='testing')
-val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=False)
-
-# Load model and set it to evaluation mode
-model = MSPTRCNN(in_channels=6, rpn_out_channels=64, classifier_hidden_channels=128, classifier_out_channels=6).cuda()
-model.load_state_dict(torch.load('checkpoints/mspt_rcnn_epoch_20.pth'))
-model.eval()
-
-# Evaluation loop
-with torch.no_grad():
-    for data in val_loader:
-        inputs, labels = data.x.cuda(), data.y.cuda()
-        outputs = model(inputs)
-        
-        # Calculate metrics (IoU, mAP, etc.)
-        # You can implement additional evaluation code here
-
-print("Validation complete")
+if __name__ == "__main__":
+    validate_model('configs/config.yaml', 'checkpoints/best_model.pth')
