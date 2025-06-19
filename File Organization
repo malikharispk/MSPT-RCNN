@@ -1,25 +1,29 @@
 MSPT-RCNN/
 │
 ├── data/
-│   └── kitti_dataset.py              # Dataset loader for KITTI
+│   ├── kitti_dataset.py           # Dataset loader for KITTI
+│   ├── kitti/                     # KITTI dataset folder
+│   │   ├── training/
+│   │   └── testing/
+│   └── utils.py                   # Utility functions
 │
 ├── models/
 │   ├── __init__.py
-│   ├── embedding.py                 # Neighborhood embedding module
-│   ├── offset_attention.py         # Offset attention layer
-│   ├── jump_offset_attention.py    # Jump connection offset attention module
-│   ├── rpn.py                      # Region proposal network (RPN)
-│   └── mspt_rcnn.py                # Main MSPT-RCNN model wrapper
+│   ├── neighborhood_embed.py      # Neighborhood Embedding Module
+│   ├── offset_attention.py       # Offset Attention Layer
+│   ├── rpn.py                    # Region Proposal Network
+│   └── mspt_rcnn.py              # Main MSPT-RCNN model wrapper
 │
 ├── utils/
-│   ├── metrics.py                  # Evaluation metrics (IoU, mAP)
-│   ├── visualizer.py               # Visualization of point cloud
-│   └── bbox_utils.py               # Utilities for bounding box manipulation
+│   ├── metrics.py                # Evaluation metrics (IoU, mAP)
+│   ├── visualizer.py             # Visualization of point cloud and bounding boxes
+│   └── bbox_utils.py             # Utilities for bounding box manipulation
 │
-├── checkpoints/                    # Directory to store saved models
+├── checkpoints/                  # Directory to store saved models
 ├── configs/
-│   └── config.yaml                 # Configuration file for hyperparameters
-├── requirements.txt                # List of Python dependencies
-├── train.py                        # Training loop for MSPT-RCNN
-├── val.py                          # Validation and evaluation loop
-└── README.md                       # Project documentation (GitHub README)
+│   └── config.yaml               # Configuration file for hyperparameters
+├── requirements.txt              # List of Python dependencies
+├── train.py                      # Training loop for MSPT-RCNN
+├── val.py                        # Validation and evaluation loop
+├── test.py                       # Testing loop
+└── README.md                     # Project overview and instructions
