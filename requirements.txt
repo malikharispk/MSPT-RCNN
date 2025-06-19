@@ -1,6 +1,7 @@
-torch
-numpy
-open3d
-pyyaml
-matplotlib
-scikit-learn
+torch==2.1.0
+torch-geometric==2.2.0
+numpy==1.21.0
+scikit-learn==0.24.2
+matplotlib==3.4.3
+pandas==1.2.5
+tqdm==4.61.1
